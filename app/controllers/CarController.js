@@ -37,6 +37,10 @@ class CarController extends ApplicationController {
     try {
       const { name, price, size, image } = req.body;
 
+      if (!name || name === "") {
+        throw new Error("Name should be provided");
+      }
+
       const car = await this.carModel.create({
         name,
         price,

@@ -14,7 +14,7 @@ module.exports = {
 
     const role = await Role.findOne({
       where: {
-        name: "CUSTOMER",
+        name: "ADMIN",
       },
     });
 
@@ -31,6 +31,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete("Users", { name: { [Op.in]: names } }, {});
+    await queryInterface.bulkDelete("Users", {});
   },
 };

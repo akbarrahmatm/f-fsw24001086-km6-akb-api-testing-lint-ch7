@@ -10,7 +10,7 @@ describe("[API AUTH LOGIN TESTS]", () => {
     jest.clearAllMocks();
   });
 
-  it("Success login", async () => {
+  test("Success login", async () => {
     const credential = {
       email: "brian@binar.co.id",
       password: "123456",
@@ -22,7 +22,7 @@ describe("[API AUTH LOGIN TESTS]", () => {
     expect(response.body.accessToken).not.toBeNull();
   });
 
-  it("Failed login - Wrong Password", async () => {
+  test("Failed login - Wrong Password", async () => {
     const credential = {
       email: "brian@binar.co.id",
       password: "jasndjasndjas",
@@ -35,7 +35,7 @@ describe("[API AUTH LOGIN TESTS]", () => {
     expect(response.body.error.message).toBe("Password is not correct!");
   });
 
-  it("Failed login - Unregistered Email", async () => {
+  test("Failed login - Unregistered Email", async () => {
     const credential = {
       email: "brianzzz@binar.co.id",
       password: "jasndjasndjas",
@@ -53,7 +53,7 @@ describe("[API AUTH LOGIN TESTS]", () => {
 });
 
 describe("[API AUTH REGISTER TESTS]", () => {
-  it("Success register", async () => {
+  test("Success register", async () => {
     const randomizeCredential = ({ name, password }) => {
       const simplifiedName = name.replace(/\s+/g, "").toLowerCase();
 
@@ -95,7 +95,7 @@ describe("[API AUTH REGISTER TESTS]", () => {
     expect(response.body.accessToken).not.toBeNull();
   });
 
-  it("Failed register - Email exist", async () => {
+  test("Failed register - Email exist", async () => {
     const credential = {
       email: "brian@binar.co.id",
       password: "123456",
@@ -120,12 +120,12 @@ describe("[API AUTH GET USER TEST]", () => {
   beforeAll(async () => {
     const response = await request(app)
       .post("/v1/auth/login")
-      .send({ email: "brian@binar.co.id", password: "123456" });
+      .send({ email: "akbarrahmatm@binar.co.id", password: "123456" });
 
     authToken = response.body.accessToken;
   });
 
-  it("Get User Check", async () => {
+  test("Get User Check", async () => {
     const response = await request(app)
       .get("/v1/auth/whoami")
       .set("Authorization", `Bearer ${authToken}`);
@@ -133,7 +133,7 @@ describe("[API AUTH GET USER TEST]", () => {
     expect(response.body).not.toBeNull;
   });
 
-  it("Get User Check - No Token Provided", async () => {
+  test("Get User Check - No Token Provided", async () => {
     const response = await request(app).get("/v1/auth/whoami");
     expect(response.statusCode).toBe(401);
     expect(response.body.error).not.toBeNull;
@@ -141,7 +141,7 @@ describe("[API AUTH GET USER TEST]", () => {
     expect(response.body.error.message).toBe("jwt must be provided");
   });
 
-  it("Get User Check - Wrong Token", async () => {
+  test("Get User Check - Wrong Token", async () => {
     const response = await request(app)
       .get("/v1/auth/whoami")
       .set("Authorization", "Bearer ngasal");
@@ -151,7 +151,7 @@ describe("[API AUTH GET USER TEST]", () => {
     expect(response.body.error.message).toBe("jwt malformed");
   });
 
-  it("Get User Check - Token Provided, But Payload Role Is Not Valid", async () => {
+  test("Get User Check - Token Provided, But Payload Role Is Not Valid", async () => {
     let token = jwt.sign(
       {
         id: "",
@@ -162,8 +162,6 @@ describe("[API AUTH GET USER TEST]", () => {
       process.env.JWT_SIGNATURE_KEY
     );
 
-    console.log(`Token : ${token}`);
-
     const response = await request(app)
       .get("/v1/auth/whoami")
       .set("Authorization", `Bearer ${token}`);
@@ -173,7 +171,7 @@ describe("[API AUTH GET USER TEST]", () => {
     expect(response.body.error.message).toBe("Access forbidden!");
   });
 
-  it("Get User Check - Token Provided & Payload Is Valid, But ID User Unexpectedly Modified", async () => {
+  test("Get User Check - Token Provided & Payload Is Valid, But ID User Unexpectedly Modified", async () => {
     let token = jwt.sign(
       {
         id: 622, // This is invalid id
@@ -187,8 +185,6 @@ describe("[API AUTH GET USER TEST]", () => {
       },
       process.env.JWT_SIGNATURE_KEY
     );
-
-    console.log(`Token : ${token}`);
 
     const response = await request(app)
       .get("/v1/auth/whoami")
