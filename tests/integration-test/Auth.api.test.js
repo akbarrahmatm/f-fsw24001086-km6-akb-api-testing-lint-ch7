@@ -3,6 +3,7 @@ dotenv.config();
 
 const request = require("supertest");
 const app = require("../../app");
+const jwt = require("jsonwebtoken");
 
 describe("[API AUTH LOGIN TESTS]", () => {
   afterEach(() => {
@@ -148,5 +149,53 @@ describe("[API AUTH GET USER TEST]", () => {
     expect(response.body.error).not.toBeNull;
     expect(response.body.error.name).toBe("JsonWebTokenError");
     expect(response.body.error.message).toBe("jwt malformed");
+  });
+
+  it("Get User Check - Token Provided, But Payload Role Is Not Valid", async () => {
+    let token = jwt.sign(
+      {
+        id: "",
+        name: "",
+        email: "",
+        role: "",
+      },
+      process.env.JWT_SIGNATURE_KEY
+    );
+
+    console.log(`Token : ${token}`);
+
+    const response = await request(app)
+      .get("/v1/auth/whoami")
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.statusCode).toBe(401);
+    expect(response.body.error).not.toBeNull;
+    expect(response.body.error.name).toBe("Error");
+    expect(response.body.error.message).toBe("Access forbidden!");
+  });
+
+  it("Get User Check - Token Provided & Payload Is Valid, But ID User Unexpectedly Modified", async () => {
+    let token = jwt.sign(
+      {
+        id: 622, // This is invalid id
+        name: "Brian",
+        email: "brian@binar.co.id",
+        image: null,
+        role: {
+          id: "1",
+          name: "CUSTOMER",
+        },
+      },
+      process.env.JWT_SIGNATURE_KEY
+    );
+
+    console.log(`Token : ${token}`);
+
+    const response = await request(app)
+      .get("/v1/auth/whoami")
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).not.toBeNull;
+    expect(response.body.error.name).toBe("Error");
+    expect(response.body.error.message).toBe("User not found!");
   });
 });
