@@ -4,14 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest --setupFiles dotenv/config --coverage --verbose --forceExit",
     "start": "node -r dotenv/config bin/www",
     "develop": "nodemon -r dotenv/config bin/www",
     "db:create": "sequelize db:create",
     "db:drop": "sequelize db:drop",
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:undo:all && sequelize db:seed:all",
-    "lint": "./node_modules/.bin/eslint --fix --ext .js,.jsx"
+    "test": "jest --setupFiles dotenv/config --coverage --verbose --forceExit",
+    "lint": "npx eslint ** --fix"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
